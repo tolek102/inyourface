@@ -3,8 +3,12 @@ package pl.inyourface.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,23 +24,21 @@ import pl.inyourface.model.User;
 import pl.inyourface.repository.UserRepository;
 
 @Slf4j
-@RestController
+@Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/users")
     public ResponseEntity getUsers() throws JsonProcessingException {
         final List<User> users = userRepository.findAll();
+        log.info("allUsers: " + users);
         return ResponseEntity.ok(objectMapper.writeValueAsString(users));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/users")
-    public ResponseEntity addUser(@RequestBody final User user) {
+    public ResponseEntity addUser(final User user) {
+        log.info("user: " + user.getUsername() + " " + user.getPassword());
         final Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());
 
         if (userFromDb.isPresent()) {
